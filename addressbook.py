@@ -6,11 +6,13 @@ from collections import UserDict
 from colorama import Fore, Style
 from abc import ABC, abstractmethod
 
+
 # Абстрактний клас DataPrinter з абстрактним методом show_all()
 class DataPrinter(ABC):
     @abstractmethod
     def show_all(self, data):
         pass
+
 
 # Конкретна реалізація DataPrinter для виводу в консоль
 class ConsoleDataPrinter(DataPrinter):
@@ -19,15 +21,18 @@ class ConsoleDataPrinter(DataPrinter):
             print(item)
             print('-' * 30)
 
+
 # Спочатку визначимо інтерфейс UserView
 class UserView:
     def show(self, message):
         pass
 
+
 # Створимо конкретну реалізацію UserView для виведення інформації у консоль
 class ConsoleUserView(UserView):
     def show(self, message):
         print(message)
+
 
 # Далі визначимо інтерфейс для об'єкта, який зберігатиме дані (DataStorage)
 class DataStorage:
@@ -39,6 +44,7 @@ class DataStorage:
 
     def delete(self, key):
         pass
+
 
 # Реалізація DataStorage
 class InMemoryDataStorage(DataStorage):
@@ -55,10 +61,12 @@ class InMemoryDataStorage(DataStorage):
         if key in self.data:
             del self.data[key]
 
+
 # Тепер визначимо клас Field, який буде використовуватися для полів контактів
 class Field:
     def __init__(self, value):
         self.value = value
+
 
 # Реалізація Phone
 class Phone(Field):
@@ -80,6 +88,7 @@ class Phone(Field):
     def __str__(self):
         return self.value
 
+
 # Реалізація Email
 class Email(Field):
     def __init__(self, value):
@@ -95,15 +104,18 @@ class Email(Field):
     def __str__(self):
         return self.value
 
+
 # Реалізація Name
 class Name(Field):
     def __str__(self):
         return self.value
 
+
 # Реалізація Address
 class Address(Field):
     def __str__(self):
         return self.value
+
 
 # Реалізація Birthday
 class Birthday(Field):
@@ -118,6 +130,7 @@ class Birthday(Field):
 
     def __str__(self):
         return self.value.strftime('%Y-%m-%d')
+
 
 # Реалізація класу Record для зберігання контактної інформації
 class Record:
@@ -193,6 +206,7 @@ class Record:
         result += "-" * 30
         return result
 
+
 # Визначимо інтерфейс для роботи з адресною книгою
 class AddressBookInterface:
     def add_record(self, record: Record):
@@ -213,6 +227,7 @@ class AddressBookInterface:
 
     def get_upcoming_birthday_contacts(self, days):
         pass
+
 
 # Реалізація AddressBook
 class AddressBook(AddressBookInterface, UserDict):
@@ -285,13 +300,14 @@ class AddressBook(AddressBookInterface, UserDict):
                 next_birthday = datetime(today.year, record.birthday.value.month, record.birthday.value.day).date()
                 if today > next_birthday:
                     next_birthday = datetime(today.year + 1, record.birthday.value.month,
-                                              record.birthday.value.day).date()
+                                             record.birthday.value.day).date()
                 days_left = (next_birthday - today).days
 
                 if days_left == days:
                     upcoming_birthday_contacts.append(record)
 
         return upcoming_birthday_contacts
+
 
 # Основна функція для роботи з програмою
 def main():
@@ -474,6 +490,7 @@ def main():
 
         else:
             user_view.show("Invalid choice. Please enter a valid choice (1/2/3/4/5/6/7/8/9)")
+
 
 if __name__ == "__main__":
     main()
