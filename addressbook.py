@@ -5,7 +5,7 @@ from prettytable import PrettyTable
 from collections import UserDict
 from colorama import Fore, Style
 
-# Перше визначимо інтерфейс UserView
+# Спочатку визначимо інтерфейс UserView
 class UserView:
     def show(self, message):
         pass
