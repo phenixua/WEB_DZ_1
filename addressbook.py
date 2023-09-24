@@ -4,6 +4,20 @@ from datetime import datetime
 from prettytable import PrettyTable
 from collections import UserDict
 from colorama import Fore, Style
+from abc import ABC, abstractmethod
+
+# Абстрактний клас DataPrinter з абстрактним методом show_all()
+class DataPrinter(ABC):
+    @abstractmethod
+    def show_all(self, data):
+        pass
+
+# Конкретна реалізація DataPrinter для виводу в консоль
+class ConsoleDataPrinter(DataPrinter):
+    def show_all(self, data):
+        for item in data:
+            print(item)
+            print('-' * 30)
 
 # Спочатку визначимо інтерфейс UserView
 class UserView:
@@ -15,17 +29,6 @@ class ConsoleUserView(UserView):
     def show(self, message):
         print(message)
 
-# Оголосимо абстрактний клас DataPrinter
-class DataPrinter:
-    def show_all(self, data):
-        pass
-
-# Створимо конкретну реалізацію DataPrinter для виведення даних у консоль
-class ConsoleDataPrinter(DataPrinter):
-    def show_all(self, data):
-        for item in data:
-            print(item)
-
 # Далі визначимо інтерфейс для об'єкта, який зберігатиме дані (DataStorage)
 class DataStorage:
     def add(self, key, value):
@@ -35,9 +38,6 @@ class DataStorage:
         pass
 
     def delete(self, key):
-        pass
-
-    def get_all(self):
         pass
 
 # Реалізація DataStorage
@@ -54,9 +54,6 @@ class InMemoryDataStorage(DataStorage):
     def delete(self, key):
         if key in self.data:
             del self.data[key]
-
-    def get_all(self):
-        return list(self.data.values())
 
 # Тепер визначимо клас Field, який буде використовуватися для полів контактів
 class Field:
@@ -217,15 +214,8 @@ class AddressBookInterface:
     def get_upcoming_birthday_contacts(self, days):
         pass
 
-    def show_all(self):
-        pass
-
 # Реалізація AddressBook
 class AddressBook(AddressBookInterface, UserDict):
-    def __init__(self, data_printer):
-        super().__init__()
-        self.data_printer = data_printer
-
     def add_record(self, record: Record):
         self.data[record.name] = record
 
@@ -303,15 +293,12 @@ class AddressBook(AddressBookInterface, UserDict):
 
         return upcoming_birthday_contacts
 
-    def show_all(self):
-        self.data_printer.show_all(self.values())
-
 # Основна функція для роботи з програмою
 def main():
     data_storage = InMemoryDataStorage()
     user_view = ConsoleUserView()
-    data_printer = ConsoleDataPrinter()
-    book = AddressBook(data_printer)
+    book = AddressBook()
+    data_printer = ConsoleDataPrinter()  # Створення об'єкта для виводу даних
 
     while True:
         menu = PrettyTable()
@@ -451,7 +438,7 @@ def main():
 
         elif choice == "4":
             user_view.show("List of All Contacts:")
-            book.show_all()
+            data_printer.show_all(book.data.values())  # Виклик методу для виводу даних
 
         elif choice == "5":
             filename = input("Enter the filename to save the address book (address_book.json): ")
@@ -468,7 +455,7 @@ def main():
             found_records = book.search_records(query)
             if found_records:
                 user_view.show("Search Results:")
-                book.show_all(found_records)
+                data_printer.show_all(found_records)  # Виклик методу для виводу даних
             else:
                 user_view.show("No matching records found.")
 
@@ -477,7 +464,7 @@ def main():
             upcoming_birthday_contacts = book.get_upcoming_birthday_contacts(days)
             if upcoming_birthday_contacts:
                 user_view.show(f"Upcoming Birthdays in {days} days:")
-                book.show_all(upcoming_birthday_contacts)
+                data_printer.show_all(upcoming_birthday_contacts)  # Виклик методу для виводу даних
             else:
                 user_view.show("No upcoming birthdays found.")
 
